@@ -1,0 +1,430 @@
+-- Aula 1
+-- Exercício 1
+SELECT c.customer_id, c.customer_city, c.customer_state
+FROM customer as c
+LIMIT 10
+
+-- Exercício 2
+SELECT c.customer_id, c.customer_city
+FROM customer as c
+WHERE c.customer_state = 'SC' 
+LIMIT 10
+
+-- Exercício 3
+SELECT c.customer_id, c.customer_state
+FROM customer as c
+WHERE c.customer_city = 'florianopolis'
+
+-- Exercício 4
+SELECT g.geolocation_state, g.geolocation_lat, g.geolocation_lng 
+FROM geolocation as g 
+WHERE geolocation_state = 'SP'
+
+-- Exercício 5
+SELECT oi.product_id, oi.shipping_limit_date, oi.price 
+FROM order_items as oi
+WHERE oi.price > 6300
+
+-- Exercício 6
+SELECT op.order_id, op.payment_type, op.payment_installments 
+FROM order_payments as op
+WHERE op.payment_installments < 1
+
+-- Exercício 7
+SELECT o.order_id, o.customer_id, o.order_status, o.order_approved_at
+FROM orders o
+WHERE o.order_approved_at < '2016-05-05 00:00:00'
+
+-------------------------
+-- Aula 2
+-- Exercício 1
+SELECT COUNT( DISTINCT c.customer_id ) 
+FROM customer as c 
+WHERE c.customer_state = 'MG'
+
+-- Exercício 2
+SELECT COUNT(DISTINCT s.seller_city) 
+FROM sellers as s 
+WHERE seller_state = 'SC'
+
+-- Exercício 3
+SELECT COUNT(DISTINCT s.seller_city) 
+FROM sellers as s
+
+-- Exercício 4
+SELECT COUNT( DISTINCT order_id )  
+FROM order_items as oi 
+WHERE price > 3500
+
+-- Exercício 5
+SELECT AVG(oi.price) as Average_price 
+FROM order_items as oi
+
+-- Exercício 6
+SELECT MAX(oi.price) as Max_price 
+FROM order_items as oi
+
+-- Exercício 7
+SELECT MIN(oi.price) as Min_price 
+FROM order_items as oi
+
+-- Exercício 8
+SELECT COUNT( DISTINCT oi.product_id  ) as Unique_products 
+FROM order_items as oi
+WHERE price < 100
+
+-- Exercício 9
+SELECT COUNT( DISTINCT  oi.seller_id  ) as Unique_sellers 
+FROM order_items as oi
+WHERE shipping_limit_date  < '2016-09-23 00:00:00'
+
+-- Exercício 10
+SELECT DISTINCT payment_type as unique_payment_type  
+FROM order_payments op
+
+-- Exercício 11
+SELECT MAX( payment_installments )
+FROM order_payments op
+
+-- Exercício 12
+SELECT MIN(payment_installments)
+FROM order_payments op
+
+-- Exercício 13
+SELECT AVG(payment_value) 
+FROM order_payments op 
+WHERE payment_type  = 'credit_card'
+
+-- Exercício 14
+SELECT COUNT(DISTINCT order_status)  
+FROM orders as o
+
+-- Exercício 15
+SELECT DISTINCT order_status  
+FROM orders as o
+
+-- Exercício 16
+SELECT COUNT( DISTINCT customer_id  )  
+FROM orders as o
+
+-- Exercício 17
+SELECT COUNT( DISTINCT product_id  )  
+FROM products p
+
+-- Exercício 18
+SELECT MAX( product_photos_qty )  
+FROM products p
+
+-- Exercício 19
+SELECT MAX( product_weight_g  )  
+FROM products p
+
+-- Exercício 20
+SELECT AVG( DISTINCT product_height_cm  )  
+FROM products p
+
+-------------------------
+-- Aula 3
+-- Exercício 1
+SELECT customer_state as state, COUNT(DISTINCT customer_id) as quantity_customers 
+FROM customer c
+GROUP BY customer_state
+
+-- Exercício 2
+SELECT customer_state as state, COUNT(DISTINCT customer_city) as quantity_cities 
+FROM customer c
+GROUP BY customer_state 
+
+-- Exercício 3
+SELECT customer_state as state, customer_city as city, COUNT(DISTINCT customer_id) as quantity_customers 
+FROM customer c
+GROUP BY customer_state, customer_city
+
+-- Exercício 4
+SELECT customer_city as city, customer_state as state,  COUNT(DISTINCT customer_id) as quantity_customers 
+FROM customer c
+GROUP BY customer_city, customer_state
+
+-- Exercício 5
+SELECT seller_id as seller, COUNT(DISTINCT order_id) as quantity_orders 
+FROM order_items oi
+WHERE price > 3500
+GROUP BY seller_id
+
+-- Exercício 6
+SELECT  seller_id,
+		COUNT(DISTINCT order_id), 
+		MIN(DATE(shipping_limit_date)), 
+		MAX(DATE(shipping_limit_date)),
+		MAX(freight_value),
+		MIN(freight_value),
+		AVG(freight_value) 
+FROM order_items oi
+WHERE price > 1100
+GROUP BY seller_id 
+
+-- Exercício 7
+SELECT  product_id, 
+		AVG(price),
+		MAX(price),
+		MIN(price) 
+FROM order_items oi 
+GROUP BY product_id
+
+-- Exercício 8
+SELECT 
+	oi.shipping_limit_date,
+	COUNT(DISTINCT oi.seller_id  ) as quantity_sellers, 
+	AVG(oi.price) as average_price  
+FROM order_items oi 
+WHERE oi.shipping_limit_date < '2016-09-23 00:00:00'
+GROUP BY oi.shipping_limit_date
+
+-- Exercício 10
+SELECT 
+	op.payment_type,
+	COUNT(op.order_id) as quantity_orders 
+FROM order_payments op
+GROUP BY op.payment_type 
+
+-- Exercício 11
+SELECT
+	op.payment_type,
+	COUNT(op.order_id) as pedidos, 
+	AVG(op.payment_value) as média_valor_pago ,
+	MAX(op.payment_installments) as maximo_parcelamento
+FROM order_payments op
+GROUP BY op.payment_type
+
+-- Exercício 12
+SELECT 
+	payment_type,
+	payment_installments,
+	MIN(op.payment_value) as pagamento_minimo,
+	MAX(op.payment_value) as pagamento_maximo,
+	AVG(op.payment_value) as pagamento_medio,
+	SUM(op.payment_value) as pagamento_total
+FROM order_payments op
+GROUP BY payment_type, payment_installments
+
+-- Exercício 14
+SELECT 
+	customer_id, 
+	AVG(order_id) as media_pedidos 
+FROM orders o
+GROUP BY customer_id
+
+-- Exercício 15
+SELECT 
+	order_status,
+	COUNT(order_id) as quantidade_pedidos 
+FROM orders o
+WHERE o.order_approved_at > '2016-09-23 00:00:00'
+GROUP BY order_status
+
+-- Exercício 16
+SELECT 
+	o.order_approved_at as data_,
+	COUNT(o.order_id) as quantidade_pedidos
+FROM orders o
+WHERE order_approved_at > '2016-09-23 00:00:00'
+GROUP BY DATE(o.order_approved_at)
+
+-- Exercício 17
+SELECT 
+	p.product_category_name,
+	COUNT(p.product_id) as produtos 
+FROM products p 
+GROUP BY p.product_category_name
+
+-------------------------
+-- Aula 4
+
+-- Exercício 1
+SELECT 
+	COUNT(DISTINCT c.customer_id) as clientes, 
+	c.customer_state as estado
+FROM customer c
+WHERE c.customer_state = 'SP'
+
+-- Exercício 2
+SELECT COUNT(DISTINCT order_id) as pedidos
+FROM order_items oi
+WHERE DATE(shipping_limit_date) = '2016-10-08'
+
+-- Exercício 3
+SELECT COUNT(DISTINCT order_id) as pedidos
+FROM order_items oi
+WHERE DATE(shipping_limit_date) > '2016-10-08'
+
+-- Exercício 4
+SELECT COUNT(DISTINCT order_id) as pedidos
+FROM order_items oi
+WHERE DATE(shipping_limit_date) >= '2016-10-08'
+
+-- Exercício 5
+SELECT 
+	seller_id,
+	COUNT(DISTINCT order_id) as pedidos,
+	MIN(shipping_limit_date) as data_minima,
+	MAX(shipping_limit_date) as data_maxima,
+	MAX(freight_value)       as maior_frete,
+	MIN(freight_value)       as menor_frete, 
+	AVG(freight_value)       as frete_medio
+FROM order_items oi
+WHERE price < 1100
+GROUP BY seller_id
+
+-- Exercício 6
+SELECT 
+	seller_id,
+	COUNT(DISTINCT order_id) as pedidos,
+	MIN(shipping_limit_date) as data_minima,
+	MAX(shipping_limit_date) as data_maxima,
+	MAX(freight_value)       as maior_frete,
+	MIN(freight_value)       as menor_frete, 
+	AVG(freight_value)       as frete_medio
+FROM order_items oi
+WHERE price <= 1100
+GROUP BY seller_id
+
+-------------------------
+-- Aula 5
+
+-- Exercício 1
+SELECT
+	customer_state,
+	COUNT(DISTINCT c.customer_id) as clientes 
+FROM customer c
+WHERE customer_state = 'MG'
+	OR customer_state = 'RJ'
+GROUP BY customer_state
+
+-- Exercício 2
+SELECT
+	 geolocation_state,
+	COUNT(DISTINCT g.geolocation_city) as qtde_cidade 
+FROM geolocation g
+WHERE g.geolocation_state = 'SP' OR g.geolocation_state = 'RJ'
+	AND geolocation_lat > '-24.54' AND geolocation_lng < '-45.63'
+GROUP BY geolocation_state
+
+-- Exercício 3
+SELECT 
+	COUNT(DISTINCT order_id) as pedidos,
+	COUNT(product_id)        as produtos,
+	AVG(price)               as media_preco 
+FROM order_items oi 
+WHERE freight_value > 20 
+	AND DATE(shipping_limit_date) > '2016-10-01' AND DATE(shipping_limit_date) < '2016-10-31'
+
+-- Exercício 4
+SELECT
+	payment_type,
+	payment_installments,
+	COUNT(order_id)    as pedidos,
+	SUM(payment_value) as total_pago
+FROM order_payments op
+WHERE payment_installments >= 1 AND payment_installments <= 5
+	OR payment_value > 5000
+GROUP BY payment_type, payment_installments
+
+-- Exercício 5
+SELECT
+	order_status,
+	COUNT(order_id) as pedidos 
+FROM orders o
+WHERE (order_status = 'processing' OR order_status = 'canceled')
+	AND (DATE(order_estimated_delivery_date) > '2017-01-01' OR DATE(order_estimated_delivery_date) < '2016-11-23')
+GROUP BY order_status
+
+-- Exercício 6
+SELECT
+	product_category_name,
+	COUNT(product_id) 
+FROM products p
+WHERE (product_category_name = 'perfumaria' 
+	OR product_category_name = 'brinquedos' 
+	OR product_category_name = 'esporte_lazer' 
+	OR product_category_name = 'cama_mesa_banho' 
+	OR product_category_name = 'moveis_escritorio')
+	AND (product_photos_qty > 5
+	AND product_weight_g > 5
+	AND product_height_cm > 10
+	AND product_width_cm  > 20)
+GROUP BY product_category_name
+
+-------------------------
+-- Aula 6
+
+-- Exercício 1
+SELECT 
+	order_status, 
+	COUNT(DISTINCT customer_id) as clientes
+FROM orders o 
+WHERE order_status IN ('processing', 'shipped', 'delivered')
+	AND DATE(order_approved_at) BETWEEN '2016-10-01' AND '2016-10-31'
+GROUP BY order_status
+HAVING COUNT(DISTINCT customer_id) > 5
+
+-- Exercício 2
+SELECT
+	payment_installments,
+	COUNT(order_id) as pedidos,
+	SUM(payment_value) as total_pagamento
+FROM order_payments op
+WHERE payment_installments BETWEEN 1 AND 5
+	OR payment_value > 5000
+GROUP BY payment_installments
+
+-- Exercício 3
+SELECT 
+	product_category_name,
+	COUNT(DISTINCT  product_id) as produtos_unicos
+FROM products p
+WHERE product_category_name IN ('perfumaria', 'brinquedos', 'esporte_lazer', 'cama_mesa_banho')
+	AND product_photos_qty BETWEEN 5 AND 10
+	AND product_weight_g NOT BETWEEN 1 AND 5
+	AND product_height_cm > 10
+	AND product_width_cm > 20
+GROUP BY product_category_name
+HAVING COUNT(product_id) > 10 
+
+-- Exercício 4
+SELECT
+	order_status,
+	COUNT( order_id ) AS pedidos
+FROM orders o 
+WHERE ( order_status IN ('processing', 'canceled' )
+	AND ( DATE(o.order_estimated_delivery_date) BETWEEN '2016-11-23' AND '2017-01-01' )
+GROUP BY order_status
+
+-- Exercício 5
+SELECT
+	g.geolocation_state,
+	COUNT(DISTINCT  g.geolocation_city) 
+FROM geolocation g
+WHERE g.geolocation_state IN ('SP', 'RJ')
+	AND (g.geolocation_lat>'-24.54' 
+	AND g.geolocation_lng <'-45.63' )
+GROUP BY g.geolocation_state
+
+-- Exercpicio 6
+SELECT
+	p.product_category_name,
+	COUNT(DISTINCT p.product_id) as produtos 
+FROM products p
+WHERE p.product_category_name LIKE 'a%o'
+	AND p.product_photos_qty > 5
+GROUP BY p.product_category_name
+HAVING COUNT(DISTINCT p.product_id) > 10
+
+-- Exercício 7
+SELECT
+	customer_state,
+	customer_city,
+	COUNT(DISTINCT customer_id) 
+FROM customer c
+WHERE customer_city LIKE 'm%o%a'
+GROUP BY customer_state, customer_city
+HAVING COUNT(DISTINCT customer_id) > 10
