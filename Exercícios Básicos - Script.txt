@@ -1,3 +1,5 @@
+## Banco de Dados utilzado: Olist
+
 -- Aula 1
 -- Exercício 1
 SELECT c.customer_id, c.customer_city, c.customer_state
