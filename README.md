@@ -15,3 +15,8 @@ Como client foi utilizado o DBeaver;
 - Operadores de Lógica de Intervalo (LIKE, IN, BETWEEN)
 - Operadores Condicionais (IS NULL, LIMIT, ORDER BY)
 
+## Intermediário
+- Otimização das tabelas pelo banco de dados (Primary Key e Foreign Key)
+- Modelo de Entidade Relacional (MER)
+- Cardinalidade entre tabelas (1:1, 1:N, N:1, N:N)
+- Tipos de união entre tabela (INNER JOIN, LEFT JOIN, RIGHT JOIN, FULL OUTER JOIN)
