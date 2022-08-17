@@ -1,0 +1,123 @@
+-- SQL INTERMEDIÁRIO
+-- Aula 1
+
+-- Exercício 1
+-- Gerar uma tabela de dados com 10 linhas, contendo o id do pedido,
+-- o id do cliente, o status do pedido, o id do produto e o preço do produto.
+SELECT 
+	oi.order_id, 
+	o.customer_id,
+	oi.product_id,
+	oi.price 
+FROM order_items oi 
+	INNER JOIN orders o ON (oi.order_id = o.order_id)
+LIMIT 10
+	
+-- Exercício 2
+-- Gerar uma tabela de dados com 20 linhas, contendo o id do pedido, o estado do cliente,
+-- a cidade do cliente, o status do pedido, o id do produto e o preço do produto
+-- somente para clientes do estado de São Paulo.
+SELECT	
+	c.customer_id,
+	c.customer_state,
+	c.customer_city,
+	o.order_status,
+	oi.product_id,
+	oi.price
+FROM customer c 
+	INNER JOIN orders o ON (c.customer_id = o.customer_id)
+	LEFT JOIN order_items oi ON (o.order_id = oi.order_id)
+WHERE c.customer_state = 'MG'
+LIMIT 20
+
+-- Exercício 3
+-- Gerar uma tabela de dados com 50 linhas, contendo o id do pedido, o estado e a cidade
+-- do cliente, o status do pedido, o nome da categoria do produto e o preço do produto,
+-- somente para pedidos com status igual a cancelado.
+SELECT 
+	o.order_id,
+	c.customer_state,
+	c.customer_city,
+	o.order_status,
+	p.product_category_name,
+	oi.price
+FROM customer c
+	INNER JOIN orders o ON (c.customer_id = o.customer_id)
+	LEFT JOIN order_items oi ON (o.order_id = oi.order_id)
+	LEFT JOIN products p ON (oi.product_id = p.product_id)
+WHERE o.order_status = 'canceled'
+LIMIT 50
+
+-- Exercício 4
+-- Gerar uma tabela de dados com 80 linhas, contendo o id do pedido, o estado e a 
+-- cidade do cliente, o status do pedido, o nome da categoria do produto, a cidade e 
+-- o estado do vendedor e a data de aprovação do pedido, somente para os pedidos
+-- aprovados a partir do dia 16 de Setembro de 2016.
+SELECT 
+	o.order_id,
+	c.customer_state,
+	c.customer_city,
+	o.order_status,
+	p.product_category_name,
+	s.seller_city,
+	s.seller_state,
+	oi.shipping_limit_date 
+FROM customer c 
+	INNER JOIN orders o ON (c.customer_id = o.customer_id)
+	LEFT JOIN order_items oi ON (oi.order_id = o.order_id)
+	LEFT JOIN products p ON (oi.product_id = p.product_id)
+	LEFT JOIN sellers s ON (oi.seller_id = s.seller_id)
+WHERE DATE(o.order_approved_at) > '2016-09-16 00:00:00' 
+LIMIT 80
+
+-- Exercício 5
+-- Gerar uma tabela de dados com 10 linhas, contendo o id do pedido, o estado 
+-- e a cidade do cliente, o status do pedido, o nome da categoria do produto, o preço
+-- do produto, a cidade e o estado do vendedor, a data de aprovação do pedido e o tipo
+-- de pagamento, somente para o tipo de pagamento igual a boleto.
+SELECT 
+	o.order_id,
+	c.customer_state,
+	c.customer_city,
+	o.order_status,
+	p.product_category_name,
+	oi.price,
+	s.seller_city,
+	s.seller_state,
+	oi.shipping_limit_date,
+	op.payment_type
+FROM orders o
+	INNER JOIN customer c ON (o.customer_id = c.customer_id)
+	LEFT JOIN order_items oi ON (o.order_id = oi.order_id)
+	LEFT JOIN products p ON (oi.product_id = p.product_id)
+	LEFT JOIN sellers s ON (oi.seller_id = s.seller_id)
+	LEFT JOIN order_payments op ON (o.order_id = op.order_id)
+WHERE op.payment_type = 'boleto'
+LIMIT 10
+
+-- Exercício 6
+-- Gerar uma tabela de dados com 70 linhas, contendo o id do pedido, o estado e a
+-- cidade do cliente, o status do pedido, o nome da categoria do produto, o preço do
+-- produto, a cidade e o estado do vendedor, a data de aprovação do pedido, tipo de pagamento e a
+-- nota de avaliação do produto, somente para pedidos com a nota de avaliação do produto igual a 1.
+SELECT 
+	o.order_id,
+	c.customer_state,
+	c.customer_city,
+	o.order_status,
+	p.product_category_name,
+	oi.price,
+	s.seller_city,
+	s.seller_state,
+	oi.shipping_limit_date,
+	op.payment_type,
+	or2.review_score 
+FROM orders o 
+	INNER JOIN customer c ON (o.customer_id = c.customer_id)
+	LEFT JOIN order_items oi ON (o.order_id = oi.order_id)
+	LEFT JOIN products p ON (oi.product_id = p.product_id)
+	LEFT JOIN sellers s ON (oi.seller_id = s.seller_id)
+	LEFT JOIN order_payments op ON (o.order_id = op.order_id)
+	LEFT JOIN order_reviews or2 ON (o.order_id = or2.order_id)
+WHERE or2.review_score = 1
+LIMIT 70
