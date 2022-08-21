@@ -1,0 +1,96 @@
+-- Exercício 1
+-- Encontre para mim todos os pedidos que estão com status de 'shipped', pode trazer todas as informações
+SELECT *
+FROM order_items oi 
+WHERE order_id IN (
+	SELECT order_id
+	FROM orders o
+	WHERE order_status = 'shipped')
+
+-- Exercício 2
+-- Monte um relatório de todos os produtos cadastrados que tem preço de venda acima da média
+SELECT *
+FROM products p
+WHERE product_id IN (
+	SELECT oi.product_id
+	FROM order_items oi
+	WHERE oi.price > (
+		SELECT AVG(oi2.price)
+		FROM order_items oi2))
+
+-- Exercício 3
+-- Informações dos vendedores que venderam produtos da categoria 'cama_mesa_banho'
+SELECT *
+FROM sellers s 
+WHERE seller_id IN (
+	SELECT seller_id
+	FROM order_items oi 
+	WHERE product_id IN (
+		SELECT product_id 
+		FROM products p 
+		WHERE product_category_name = 'cama_mesa_banho'))
+
+-- Exercício 4
+-- Faturamento total por mês
+SELECT 
+	STRFTIME('%m', shipping_limit_date) AS mes , 
+	ROUND(SUM(price),2) as faturamento
+FROM order_items oi
+GROUP BY STRFTIME('%m', shipping_limit_date)
+
+-- Exercício 5
+-- Retirar padronizar dados na tabela 'customer'
+SELECT 
+	REPLACE(customer_city, ' ', '_'), 
+	LOWER(customer_state)
+FROM customer c
+
+-- Exercício 6
+-- Indicar o total valor pago nos pedidos
+SELECT 
+	oi.order_id as pedido,
+	(oi.price + oi.freight_value) as total_pago
+FROM order_items oi
+
+-- Exercício 7
+-- Criar tabelas relacionadas, populá-las e fazer atualizações
+CREATE TABLE artists (
+	artist_name VARCHAR PRIMARY KEY,
+	bith_date DATETIME NOT NULL,
+	death_date DATETIME DEFAULT 0,
+	nationality VARCHAR NOT NULL,
+	art_movement VARCHAR NOT NULL
+	)
+
+CREATE TABLE art_pieces (
+	name VARCHAR PRIMARY KEY,
+	date_of_creation DATETIME NOT NULL,
+	artist_name VARCHAR REFERENCES artists(artist_name)
+)
+
+INSERT INTO artists (artist_name, bith_date, death_date, nationality, art_movement)
+VALUES ('Alphonse Mucha', '1860-07-24', '1939-07-14', 'Checo', 'Art Nouveau')
+VALUES ('Gustav Klimt', '1862-07-14', '1918-02-06', 'Austríaco', 'Art Nouveau')
+
+ALTER TABLE artists 
+RENAME COLUMN bith_date TO birth_date
+
+-- Exercício 8
+-- Verificar se os pedidos estão atrasados ou não
+SELECT
+	order_id,
+	customer_id,
+	order_status,
+	CASE 
+		WHEN order_delivered_customer_date IS NULL THEN DATE('now')
+		ELSE order_delivered_customer_date
+	END 'order_delivered_customer_date',
+	order_estimated_delivery_date,
+	CASE 
+		WHEN (JULIANDAY((order_delivered_customer_date, 'localtime')) - JULIANDAY(order_estimated_delivery_date)) >=0 THEN 'Atrasado'
+		ELSE 'OK'
+	END 'Status_Entrega'
+FROM orders o
+WHERE order_status NOT IN ('unavailable', 'canceled')
+
+
