@@ -20,3 +20,19 @@ Como client foi utilizado o DBeaver;
 - Modelo de Entidade Relacional (MER)
 - Cardinalidade entre tabelas (1:1, 1:N, N:1, N:N)
 - Tipos de união entre tabela (INNER JOIN, LEFT JOIN, RIGHT JOIN, FULL OUTER JOIN)
+
+## Avançado
+- Subquery
+- DATEPART
+- Manipulação de String
+- Operações Matemáticas
+- CREATE TABLE
+- INSERT INTO
+- UPDATE
+- DELETE
+- ALTER TABLE
+- CHECK CONSTRAINT
+- NOT NULL CONSTRAINT
+- UNIQUE CONSTRAINT
+- UNIQUE
+
