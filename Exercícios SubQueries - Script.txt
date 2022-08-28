@@ -1,0 +1,79 @@
+-- SUBQUERIES --
+
+-- Exercício 1
+-- Qual o número de pedidos com o tipo de pagamento igual a "boleto"?
+SELECT
+	DISTINCT COUNT(oi.order_id) AS num_boletos
+FROM order_items oi
+WHERE order_id IN (SELECT order_id 
+				   FROM  order_payments op 
+				   WHERE op.payment_type = 'boleto')
+
+-- Exercício 2
+-- Refaça o exercício 01 usando união de tabelas
+SELECT
+	DISTINCT COUNT(oi.order_id) AS num_boletos
+FROM order_items oi INNER JOIN order_payments op2 ON (oi.order_id = op2.order_id)
+WHERE op2.payment_type = 'boleto'
+GROUP BY op2.payment_type
+
+
+-- Exercício 3
+-- Crie uma tabela que mostre a média de avaliações por dia, a média de preço por dia,
+-- a soma dos preços por dia, o preço mínimo por dia, o número de pedidos por dia, e o
+-- número de clientes únicos que compraram no dia
+SELECT
+	t1.date_,
+	t1.media_reviews,
+	t2.media_preco,
+	t2.total_preco,
+	t2.max_preco,
+	t2.min_preco,
+	t2.pedidos,
+	t3.clientes
+FROM (SELECT
+			DATE(or2.review_creation_date) AS date_,
+			AVG(review_score) AS media_reviews
+	  FROM order_reviews or2
+	  GROUP BY DATE(or2.review_creation_date)) AS t1 INNER JOIN (SELECT
+																	DATE(oi.shipping_limit_date) AS date_, 
+																	AVG(oi.price) AS media_preco,
+																	SUM(oi.price) AS total_preco,
+																	MAX(oi.price) AS max_preco,
+																	MIN(oi.price) AS min_preco,
+																	COUNT(order_id) AS pedidos
+																 FROM order_items oi 
+																 GROUP BY DATE(shipping_limit_date)) AS t2 ON (t1.date_=t2.date_)
+																					INNER JOIN (SELECT
+																									DISTINCT COUNT(o.customer_id) AS clientes,
+																									DATE(o.order_approved_at) AS date_
+																									FROM orders o 
+																									GROUP BY DATE(o.order_approved_at)) AS t3 ON (t1.date_=t3.date_)
+
+-- Exercício 4
+-- Eu gostaria de saber, por categoria, a quantidade de produtos, o tamanho médio do produto, 
+-- o tamanho médio da categoria alimentos e o tamanho médio geral
+SELECT
+	product_category_name AS categoria,
+	COUNT(product_id) AS produtos,
+	AVG(product_height_cm) as tamanho_produto,
+	(SELECT 
+		AVG(product_height_cm) 
+	 FROM products p) AS tamanho_medio_alimentos,
+	(SELECT AVG(product_height_cm) 
+	 FROM products p
+	 WHERE p.product_category_name = 'alimentos') AS tamanho_medio_categoria
+FROM products p
+GROUP BY product_category_name
+
+-- Exercício 5
+-- Qual o nome da categoria de produto com maior preço de venda? Encontre a categoria do produto
+-- somente com SubQueries
+SELECT 
+	p.product_category_name
+FROM products p
+WHERE product_id IN (SELECT
+						product_id
+					 FROM order_items oi 
+					 WHERE price IN (SELECT MAX(price)
+					 FROM order_items oi2))
